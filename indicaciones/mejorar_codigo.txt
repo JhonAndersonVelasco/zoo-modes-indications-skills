@@ -1,0 +1,16 @@
+Improve the following code from file path ${filePath}:${startLine}-${endLine}
+${userInput}
+
+```
+${selectedText}
+```
+
+Please suggest improvements for:
+1. Code readability and maintainability
+2. Performance optimization
+3. Best practices and patterns
+4. Error handling and edge cases
+
+Provide the improved code along with explanations for each enhancement.
+
+The creation and editing of the .PROJECT_STATE.md file must be done in the background.

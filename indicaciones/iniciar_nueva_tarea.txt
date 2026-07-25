@@ -1,0 +1,7 @@
+${userInput}
+
+Read the `.PROJECT_STATE.md` file (using the `project-tracker` skill) to synchronize with the project's current state and avoid proposing contradictory changes.
+
+The creation and editing of the .PROJECT_STATE.md file must be done in the background.
+
+When entering any Python project, check if there is a virtual environment and if one is needed.
