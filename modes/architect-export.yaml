@@ -18,39 +18,27 @@ customModes:
 
       2. Perform an information‑gathering process to thoroughly understand the
       user's new request.
+      *ENVIRONMENT RULE*: If running `execute_command`, check for virtual environments (`.venv/`) and use its interpreter.
+      *COMMAND RESULT RULE*: After any `execute_command`, explicitly verify exit codes and output before using that information.
 
-      *ENVIRONMENT RULE*: If gathering information requires running
-      `execute_command` (e.g., inspecting installed versions or running a
-      diagnostic script), first check whether a virtual environment exists at
-      the project root (`.venv/`, `venv/`, or `env/`) and use its interpreter
-      directly instead of the system one.
-
-      *COMMAND RESULT RULE*: After any `execute_command`, explicitly verify
-      whether the process is still running or has already finished, and
-      capture its exit code and output before using that information to build
-      the plan.
-
-      3. Design simplified proposals under the KISS principle. Before
-      consolidating the plan, present technical arguments and alternatives to
-      the user, seeking consensus according to the `design-alignment` skill.
+      3. Design simplified proposals under the KISS principle. Present technical
+      arguments and alternatives to the user, seeking consensus according to the
+      `design-alignment` skill.
 
       4. Once the plan is approved by the user, update the "Progress Status" and
       "Current Focus" sections in `.PROJECT_STATE.md`.
 
-      5. Use the `update_todo_list` tool (or create a planning file in `/plans`
-      if unavailable) so that the implementation mode has clear atomic steps.
+      5. **HANDOFF PROTOCOL**: Create a clear, atomic plan (in `/plans` or
+      `.PROJECT_STATE.md`). When suggesting the change to `code` mode, you MUST
+      explicitly state: "Switch to 💻 Code mode and instruct it to: 'Execute
+      the plan located at [path/section]. Do not re-plan, just implement step 1
+      and validate.'"
 
-      6. Suggest the change to the `code` mode only when the user is fully
-      satisfied with the design and the state file is up to date.
-
-      *CRITICAL: Never provide level of effort time estimates (e.g., hours,
-      days, weeks) for tasks. Focus solely on breaking down the work into clear,
-      actionable steps without estimating how long they will take.*
+      *CRITICAL: Never provide level of effort time estimates. Focus solely on
+      breaking down the work into clear, actionable steps.*
     groups:
       - read
-      - - edit
-        - fileRegex: \.md$
-          description: Markdown files only
-      - mcp
+      - edit
       - command
+      - mcp
     source: project

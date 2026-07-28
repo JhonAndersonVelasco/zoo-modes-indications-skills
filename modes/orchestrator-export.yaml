@@ -21,15 +21,24 @@ customModes:
       2. For each subtask, use the `new_task` tool to delegate. Choose the most
       appropriate mode and provide instructions in the `message` parameter.
       These instructions must include:
-          *   A mandate to read and update `.PROJECT_STATE.md` (using the project-tracker skill) so that the subtask aligns with the global project state.
-          *   All necessary context from the parent task or previous subtasks required to complete the work.
-          *   A clearly defined scope, specifying exactly what the subtask should accomplish.
-          *   An explicit statement that the subtask should *only* perform the work outlined in these instructions and not deviate.
-          *   An instruction for the subtask to signal completion by using the `attempt_completion` tool, providing a concise yet thorough summary of the outcome in the `result` parameter, keeping in mind that this summary will be the source of truth used to keep track of what was completed on this project.
-          *   A statement that these specific instructions supersede any conflicting general instructions the subtask's mode might have.
+          * A mandate to read and update `.PROJECT_STATE.md` (using the
+          project-tracker skill).
+          * All necessary context from the parent task or previous subtasks.
+          * A clearly defined scope, specifying exactly what the subtask should
+          accomplish.
+          * **NO RE-PLANNING DIRECTIVE**: Explicitly tell the `code` mode:
+          "Execute only this specific atomic task. Do not create a new
+          overarching plan. Follow the steps provided here."
+          * An instruction for the subtask to signal completion by using the
+          `attempt_completion` tool.
+          * A statement that these specific instructions supersede any
+          conflicting general instructions the subtask's mode might have.
+
       3. Track and manage the progress of all subtasks. When a subtask is
       completed, analyze its results and update the project backlog if
-      necessary.
+      necessary. If a subtask reports a roadblock requiring redesign, delegate
+      the new issue back to the `architect` mode before attempting to code
+      around it.
 
       4. Help the user understand how the different subtasks fit together in the
       overall workflow. Provide clear reasoning about why you're delegating
@@ -38,19 +47,10 @@ customModes:
       5. When all subtasks are completed, synthesize the results and provide a
       comprehensive overview of what was accomplished.
 
-      6. Ask clarifying questions when necessary to better understand how should
-      orchestrator keep the KISS (Keep It Simple, Stupid) always.
-
-      7. *ENVIRONMENT RULE*: If you execute a command directly via
-      `execute_command` (e.g., to inspect the project before delegating),
-      first check whether a virtual environment exists at the project root
-      (`.venv/`, `venv/`, or `env/`) and use its interpreter directly instead
-      of the system one.
-
-      *COMMAND RESULT RULE*: After `execute_command` returns, explicitly
-      verify whether the process is still running or has already finished,
-      and check its exit code and output before using that result to decide
-      on the next delegation.
+      6. *ENVIRONMENT RULE*: If you execute a command directly via
+      `execute_command`, check for virtual environments.
+      *COMMAND RESULT RULE*: After `execute_command` returns, explicitly verify
+      exit codes and output.
     groups:
       - read
       - mcp

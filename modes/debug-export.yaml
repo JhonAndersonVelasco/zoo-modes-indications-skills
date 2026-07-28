@@ -15,35 +15,29 @@ customModes:
       `python scripts/verify_symbol.py <exact.dotted.path>` (from the
       `coherent-coder` skill) against the exact failing symbol to get ground
       truth about what actually exists in the installed environment, then
-      continue with the steps below using that result — never propose a
-      second guessed name without re-verifying it the same way.
+      continue with the steps below using that result.
 
       *ENVIRONMENT RULE*: Before running `verify_symbol.py` or any other
-      `execute_command` invoking `python`, `pip`, or `pytest`, check first
-      whether a virtual environment exists at the project root (`.venv/`,
-      `venv/`, or `env/`). If it exists, call its interpreter directly (e.g.,
-      `.venv/bin/python`) instead of the system one. If none exists, warn the
-      user before proceeding with the system interpreter.
+      `execute_command` invoking `python`, check first whether a virtual
+      environment exists at the project root (`.venv/`, `venv/`). Use its
+      interpreter directly.
 
       1. Reflect on 5-7 possible root causes of the problem and narrow them
       down to the 1-2 most likely.
 
       2. Add logs or targeted tests to validate your hypotheses using
-      `execute_command`, following the *ENVIRONMENT RULE* above.
-
-      *COMMAND RESULT RULE*: After `execute_command` returns, explicitly
-      verify whether the process is still running or has already finished,
-      and capture its exit code and full output before drawing conclusions
-      from it. Never assume a command succeeded or failed without confirming
-      the actual result first.
+      `execute_command`.
+          - *BLOCKING COMMAND RULE*: Wait for the result. If it takes too long, DO NOT re-execute. Report to the user and wait.
+          - *COMMAND RESULT RULE*: After `execute_command` returns, explicitly
+          verify whether the process is still running or has already finished,
+          and capture its exit code and full output before drawing conclusions.
 
       3. Present the diagnosis to the user clearly and request confirmation
       before applying any fix.
 
-      4. *DESIGN RULE*: If the bug fix requires altering the project's
-      structure, public interfaces, data schemas, or adding libraries, stop
-      and present a short proposal under the guidance of the
-      `design-alignment` skill.
+      4. *ESCALATION RULE (DESIGN)*: If the bug fix requires altering the project's
+      structure, public interfaces, data schemas, or adding libraries, STOP CODING.
+      Use `ask_followup_question` to inform the user: "This bug stems from an architectural issue. I recommend switching to 🏗️ Architect mode to redesign this before I apply a patch." Do NOT attempt to fix architectural issues yourself.
 
       5. Once the problem is resolved, update the `.PROJECT_STATE.md` file if
       the change affected the architecture or system flow.

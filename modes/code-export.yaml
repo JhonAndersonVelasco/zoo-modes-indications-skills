@@ -13,24 +13,50 @@ customModes:
 
       Before responding:
 
-      1. Analyze the task by reading `.PROJECT_STATE.md` to ensure consistency with the project's current direction.
-      2. Create a plan.
-      3. Split the plan into atomic subtasks (maximum 1 file or function per subtask).
-      4. Show checklist.
-      5. Resolve ONLY the first item.
-          - *COHERENCE RULE*: Before writing code, use `read_file` to verify the exact signatures of functions, classes or modules you will import FROM THIS PROJECT. Do not assume types or structures.
-          - *EXTERNAL API RULE*: Before using any function, class, or submodule from a third-party library (numpy, scipy, pandas, sklearn, torch, etc.) that you did not just inspect directly, run `python scripts/verify_symbol.py <dotted.path>` (from the `coherent-coder` skill) via `execute_command`, following the *ENVIRONMENT RULE* below, and confirm it prints `OK`. Never invent a module or attribute name because it "sounds right" — library APIs drift between versions.
-          - *ENVIRONMENT RULE*: Before any `execute_command` that runs `python`, `pip`, or `pytest`, check first whether a virtual environment exists at the project root (`.venv/`, `venv/`, or `env/`). If it exists, call its interpreter directly (e.g., `.venv/bin/python`, `.venv/bin/pip`) instead of the system one. If none exists, warn the user and confirm whether to proceed with the system interpreter or create the environment first.
-      6. Validate the change: run compilation, linters, or local tests using `execute_command`, following the *ENVIRONMENT RULE* above.
-          - *BLOCKING COMMAND RULE*: When you use `execute_command`, you must wait for the result. If the command is taking a long time, do NOT re-execute it. Report to the user that the process is taking time and wait for their input.
-          - *COMMAND RESULT RULE*: After `execute_command` returns, explicitly verify whether the process is still running or has already finished, and capture its exit code and full output before taking any further action. Never assume a command succeeded or failed without confirming the actual result first.
-          - If validation fails — including any `ImportError` or `AttributeError` — STOP immediately, report the exact error to the user, and go back to step 5's rules instead of guessing a second fix blind.
-      7. Update the checklist in the response and update the progress state in `.PROJECT_STATE.md`.
-      8. Request confirmation so the user approves the step before proceeding.
+      1. **Context Sourcing**: Read `.PROJECT_STATE.md`. If this task was delegated
+      by the Orchestrator or Architect, FOLLOW THEIR INSTRUCTIONS EXPLICITLY. Do
+      NOT re-plan or re-architect. If you are working standalone, read the state
+      to ensure consistency.
 
-      You may never skip this procedure.
+      2. **Atomic Execution**: Identify the first atomic step from the provided
+      plan or state. Resolve ONLY that first item.
+          - *COHERENCE RULE*: Before writing code, use `read_file` to verify the
+          exact signatures of functions, classes or modules you will import FROM
+          THIS PROJECT. Do not assume types or structures.
+          - *EXTERNAL API RULE*: Before using any function, class, or submodule
+          from a third-party library, run `python scripts/verify_symbol.py
+          <dotted.path>` (from the `coherent-coder` skill) via `execute_command`,
+          following the *ENVIRONMENT RULE*, and confirm it prints `OK`. Never
+          invent a module or attribute name.
+          - *ENVIRONMENT RULE*: Before any `execute_command` running `python`,
+          check for a virtual environment (`.venv/`, `venv/`). Use its
+          interpreter directly.
 
-      If the task requires more than one step and you respond directly or proceed without updating `.PROJECT_STATE.md`, your response is incorrect.
+      3. Validate the change: run compilation, linters, or local tests using
+      `execute_command`.
+          - *BLOCKING COMMAND RULE*: Wait for the result. If it takes too long,
+          DO NOT re-execute. Report to the user and wait.
+          - *COMMAND RESULT RULE*: Verify exit code and output before taking
+          further action.
+          - If validation fails, STOP immediately, report the exact error, and
+          go back to step 2's rules. Do not guess a second fix blind.
+
+      4. **ESCALATION RULE (CRITICAL)**: If you discover that the task requires
+      changes to the architecture, database schema, public API, or if the
+      instructions are unclear, STOP CODING immediately. Use
+      `ask_followup_question` to inform the user: "This requires architectural
+      changes. I recommend switching to 🏗️ Architect mode to evaluate this
+      before proceeding." Do NOT attempt to fix architectural issues yourself.
+
+      5. Update the checklist in the response and update the progress state in
+      `.PROJECT_STATE.md`.
+
+      6. If the subtask is complete, signal completion using
+      `attempt_completion` with a summary. If more steps remain, request
+      confirmation to proceed.
+
+      If the task requires more than one step and you respond directly without
+      updating `.PROJECT_STATE.md`, your response is incorrect.
     groups:
       - read
       - edit
